@@ -1,0 +1,4 @@
+usuario:william	
+contraseña:admin123
+
+para acceder al login hacer click en cuadro azul de la parte superior, e importar la bd a xampp o wampp o cualquier servidor local
