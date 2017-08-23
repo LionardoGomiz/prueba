@@ -1,94 +1,68 @@
 <?php
 
-require_once "conexion.php";
+require_once "backend/models/conexion.php";
 
 class MensajesModel{
 
-	#MOSTRAR MENSAJES EN LA VISTA
-	#------------------------------------------------------------
-	public function mostrarMensajesModel($tabla){
+	#REGISTRO MENSAJES
+	#-----------------------------------------------------------
 
-		$stmt = Conexion::conectar()->prepare("SELECT id, nombre, email, mensaje, fecha FROM $tabla ORDER BY fecha DESC"); 
+	public function registroMensajesModel($datos, $tabla){
 
-		$stmt -> execute();
+		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (nombre, email, mensaje) VALUES (:nombre, :email, :mensaje)");
 
-		return $stmt -> fetchAll();
-
-		$stmt -> close();
-	}
-
-	#BORRAR MENSAJES
-	#-----------------------------------------------------
-	public function borrarMensajesModel($datosModel, $tabla){
-
-		$stmt = Conexion::conectar()->prepare("DELETE FROM $tabla WHERE id = :id");
-
-		$stmt->bindParam(":id", $datosModel, PDO::PARAM_INT);
+		$stmt -> bindParam(":nombre", $datos["nombre"], PDO::PARAM_STR);
+		$stmt -> bindParam(":email", $datos["email"], PDO::PARAM_STR);
+		$stmt -> bindParam(":mensaje", $datos["mensaje"], PDO::PARAM_STR);
 
 		if($stmt->execute()){
 
 			return "ok";
-
 		}
-
 		else{
 
 			return "error";
-
 		}
 
 		$stmt->close();
 
 	}
 
-	#ENVIAR EMAIL MASIVOS
-	#-------------------------------------------------
-	public function seleccionarEmailSuscriptores($tabla){
+	#REGISTRO SUSCRIPTORES
+	#-----------------------------------------------------------
 
-		$stmt = Conexion::conectar()->prepare("SELECT nombre, email FROM $tabla");
+	public function registroSuscriptoresModel($datos, $tabla){
 
-		$stmt -> execute();
+		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (nombre, email) VALUES (:nombre, :email)");
 
-		return $stmt -> fetchAll();
-
-		$stmt -> close();
-
-	}
-
-	#SELECCIONAR MENSAJES SIN REVISAR
-	#------------------------------------------------------------
-	public function mensajesSinRevisarModel($tabla){
-
-		$stmt = Conexion::conectar()->prepare("SELECT revision FROM $tabla");
-
-		$stmt -> execute();
-
-		return $stmt -> fetchAll();
-
-		$stmt -> close();
-
-	}
-
-	#MENSAJES REVISADOS
-	#------------------------------------------------------------
-	public function mensajesRevisadosModel($datosModel, $tabla){
-
-		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET revision = :revision");
-
-		$stmt->bindParam(":revision", $datosModel, PDO::PARAM_INT);
+		$stmt -> bindParam(":nombre", $datos["nombre"], PDO::PARAM_STR);
+		$stmt -> bindParam(":email", $datos["email"], PDO::PARAM_STR);
 
 		if($stmt->execute()){
 
 			return "ok";
-
 		}
-
 		else{
 
 			return "error";
-
 		}
 
+		$stmt->close();
+
+	}
+
+	#VALIDAR SUSCRIPTOR EXISTENTE
+	#-------------------------------------
+	public function revisarSuscriptorModel($datosModel, $tabla){
+
+		$stmt = Conexion::conectar()->prepare("SELECT email FROM $tabla WHERE email = :email");
+		
+		$stmt->bindParam(":email", $datosModel, PDO::PARAM_STR);
+		
+		$stmt->execute();
+		
+		return $stmt->fetch();
+		
 		$stmt->close();
 
 	}
